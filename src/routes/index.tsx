@@ -102,8 +102,6 @@ function HomePage() {
     () => receipts.reduce((s, r) => s + r.amount, 0),
     [receipts],
   );
-  const verifyUrl =
-    typeof window !== "undefined" ? window.location.origin : "https://qatra-e-karam.app";
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -115,7 +113,6 @@ function HomePage() {
       />
       <AboutSection />
       <ReceiptsSection receipts={receipts} total={totalRaised} loading={isLoading} />
-      <QRSection url={verifyUrl} />
       <TransparencySection />
       <ContactSection />
       <SiteFooter />
@@ -139,7 +136,7 @@ function SiteHeader() {
         <nav className="hidden gap-7 text-sm font-medium text-muted-foreground md:flex">
           <a href="#about" className="hover:text-foreground">About</a>
           <a href="#receipts" className="hover:text-foreground">Receipts</a>
-          <a href="#verify" className="hover:text-foreground">Verify</a>
+          
           <a href="#contact" className="hover:text-foreground">Contact</a>
         </nav>
         <a
@@ -197,12 +194,6 @@ function Hero({
               className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-ink-foreground shadow-soft transition hover:translate-y-[-1px] hover:opacity-95"
             >
               View donation receipts
-            </a>
-            <a
-              href="#verify"
-              className="rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-muted"
-            >
-              How to verify
             </a>
           </div>
         </div>
@@ -451,45 +442,6 @@ function ReceiptArtwork({ receipt }: { receipt: Receipt }) {
   );
 }
 
-function QRSection({ url }: { url: string }) {
-  return (
-    <section id="verify" className="bg-ink text-ink-foreground">
-      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-20 md:grid-cols-[1fr_auto] md:items-center md:py-28">
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-cream/15 bg-cream/5 px-3 py-1 text-xs font-medium uppercase tracking-widest text-cream/80">
-            Verify
-          </span>
-          <h2 className="mt-4 font-display text-3xl font-bold leading-tight md:text-5xl">
-            Scan to verify donations.
-          </h2>
-          <p className="mt-4 max-w-md text-cream/70">
-            Scan the QR code on any Qatra-e-Karam bottle to land back here — the
-            single, public source of truth for every Rs. 5 you've contributed.
-          </p>
-          <div className="mt-6 flex items-center gap-3 text-sm text-cream/60">
-            <span className="h-px w-10 bg-cream/30" />
-            <span>Same page. Same receipts. Always.</span>
-          </div>
-        </div>
-
-        <div className="justify-self-center md:justify-self-end">
-          <div className="rounded-3xl bg-cream p-6 shadow-card">
-            <QRCodeSVG
-              value={url}
-              size={220}
-              level="M"
-              bgColor="transparent"
-              fgColor="#1a1d1a"
-            />
-            <p className="mt-4 text-center font-display text-sm font-bold uppercase tracking-widest text-ink">
-              Qatra-e-Karam
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function TransparencySection() {
   return (
