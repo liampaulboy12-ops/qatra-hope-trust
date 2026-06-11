@@ -55,44 +55,44 @@
 :root {
   --radius: 0.875rem;
 
-  /* Cream paper background, deep ink foreground */
-  --background: oklch(0.985 0.012 95);
-  --foreground: oklch(0.16 0.01 150);
+  /* Black canvas, cream foreground — Palestinian flag inspired */
+  --background: oklch(0.12 0.005 150);
+  --foreground: oklch(0.97 0.012 95);
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.01 150);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.01 150);
+  --card: oklch(0.17 0.008 150);
+  --card-foreground: oklch(0.97 0.012 95);
+  --popover: oklch(0.17 0.008 150);
+  --popover-foreground: oklch(0.97 0.012 95);
 
-  /* Primary = deep Palestinian green */
-  --primary: oklch(0.42 0.13 150);
-  --primary-foreground: oklch(0.985 0.012 95);
+  /* Primary = vivid Palestinian green */
+  --primary: oklch(0.62 0.18 145);
+  --primary-foreground: oklch(0.1 0.005 150);
 
-  --secondary: oklch(0.95 0.02 120);
-  --secondary-foreground: oklch(0.16 0.01 150);
+  --secondary: oklch(0.22 0.01 150);
+  --secondary-foreground: oklch(0.97 0.012 95);
 
-  --muted: oklch(0.95 0.012 95);
-  --muted-foreground: oklch(0.45 0.015 150);
+  --muted: oklch(0.22 0.01 150);
+  --muted-foreground: oklch(0.72 0.015 120);
 
-  --accent: oklch(0.92 0.04 145);
-  --accent-foreground: oklch(0.16 0.01 150);
+  --accent: oklch(0.28 0.05 145);
+  --accent-foreground: oklch(0.97 0.012 95);
 
-  /* Destructive / accent red — used sparingly */
-  --destructive: oklch(0.55 0.21 25);
-  --destructive-foreground: oklch(0.985 0.012 95);
+  /* Destructive / accent red */
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: oklch(0.98 0.012 95);
 
-  --border: oklch(0.88 0.012 120);
-  --input: oklch(0.88 0.012 120);
-  --ring: oklch(0.42 0.13 150);
+  --border: oklch(0.28 0.012 150);
+  --input: oklch(0.28 0.012 150);
+  --ring: oklch(0.62 0.18 145);
 
   /* Brand-specific tokens */
-  --ink: oklch(0.14 0.005 150);
-  --ink-foreground: oklch(0.985 0.012 95);
-  --leaf: oklch(0.42 0.13 150);
-  --leaf-foreground: oklch(0.985 0.012 95);
-  --blood: oklch(0.55 0.21 25);
-  --blood-foreground: oklch(0.985 0.012 95);
-  --cream: oklch(0.985 0.012 95);
+  --ink: oklch(0.08 0.005 150);
+  --ink-foreground: oklch(0.97 0.012 95);
+  --leaf: oklch(0.62 0.18 145);
+  --leaf-foreground: oklch(0.08 0.005 150);
+  --blood: oklch(0.62 0.22 25);
+  --blood-foreground: oklch(0.98 0.012 95);
+  --cream: oklch(0.97 0.012 95);
 }
 
 @layer base {

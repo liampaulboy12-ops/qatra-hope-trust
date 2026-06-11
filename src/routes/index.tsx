@@ -42,6 +42,11 @@ type Receipt = {
   note: string;
 };
 
+// ─────────────────────────────────────────────────────────────
+// 📋 ADD A NEW RECEIPT HERE
+// Paste your new receipt at the TOP of this list.
+// Total raised, receipts count, and the front-page grid update automatically.
+// ─────────────────────────────────────────────────────────────
 const RECEIPTS: Receipt[] = [
   {
     id: "QK-2026-03",
@@ -86,6 +91,8 @@ const RECEIPTS: Receipt[] = [
     note: "Pediatric treatment fund",
   },
 ];
+
+const FRONT_PAGE_COUNT = 3;
 
 const fmtPKR = (n: number) =>
   new Intl.NumberFormat("en-PK", {
@@ -207,9 +214,7 @@ function Hero({ totalRaised, bottles }: { totalRaised: number; bottles: number }
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <Stat label="Receipts published" value={`${RECEIPTS.length}`} />
-              <Stat label="Partner NGOs" value={`${new Set(RECEIPTS.map(r => r.org)).size}`} />
-              <Stat label="Months active" value="6" />
-              <Stat label="Hidden fees" value="0" accent />
+              <Stat label="Rupees per bottle" value="Rs. 5" accent />
             </div>
           </div>
           <div className="absolute -top-4 -right-3 rounded-full bg-blood px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-blood-foreground shadow-soft">
@@ -289,12 +294,45 @@ function ReceiptsSection({
         </div>
       </div>
 
+      <ReceiptsGrid receipts={receipts} />
+    </section>
+  );
+}
+
+function ReceiptsGrid({ receipts }: { receipts: Receipt[] }) {
+  const [showAll, setShowAll] = useState(false);
+  const hasMore = receipts.length > FRONT_PAGE_COUNT;
+  const visible = showAll ? receipts : receipts.slice(0, FRONT_PAGE_COUNT);
+
+  return (
+    <>
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {receipts.map((r) => (
-          <ReceiptCard key={r.id} receipt={r} />
+        {visible.map((r, i) => (
+          <div key={r.id} className="relative">
+            {i === 0 && (
+              <span className="absolute -top-2 -left-2 z-10 rounded-full bg-blood px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-blood-foreground shadow-soft">
+                Latest
+              </span>
+            )}
+            <ReceiptCard receipt={r} />
+          </div>
         ))}
       </div>
-    </section>
+
+      {hasMore && (
+        <div className="mt-10 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setShowAll((v) => !v)}
+            className="rounded-full border border-leaf/40 bg-leaf/10 px-6 py-3 text-sm font-semibold text-leaf transition hover:bg-leaf hover:text-leaf-foreground"
+          >
+            {showAll
+              ? "Show latest only"
+              : `View older receipts (${receipts.length - FRONT_PAGE_COUNT})`}
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 
