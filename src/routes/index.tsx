@@ -42,6 +42,11 @@ type Receipt = {
   note: string;
 };
 
+// ─────────────────────────────────────────────────────────────
+// 📋 ADD A NEW RECEIPT HERE
+// Paste your new receipt at the TOP of this list.
+// Total raised, receipts count, and the front-page grid update automatically.
+// ─────────────────────────────────────────────────────────────
 const RECEIPTS: Receipt[] = [
   {
     id: "QK-2026-03",
@@ -86,6 +91,8 @@ const RECEIPTS: Receipt[] = [
     note: "Pediatric treatment fund",
   },
 ];
+
+const FRONT_PAGE_COUNT = 3;
 
 const fmtPKR = (n: number) =>
   new Intl.NumberFormat("en-PK", {
