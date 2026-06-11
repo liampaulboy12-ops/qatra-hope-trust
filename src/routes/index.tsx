@@ -102,8 +102,6 @@ function HomePage() {
     () => receipts.reduce((s, r) => s + r.amount, 0),
     [receipts],
   );
-  const verifyUrl =
-    typeof window !== "undefined" ? window.location.origin : "https://qatra-e-karam.app";
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -115,7 +113,6 @@ function HomePage() {
       />
       <AboutSection />
       <ReceiptsSection receipts={receipts} total={totalRaised} loading={isLoading} />
-      <QRSection url={verifyUrl} />
       <TransparencySection />
       <ContactSection />
       <SiteFooter />
