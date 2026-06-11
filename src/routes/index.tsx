@@ -136,7 +136,7 @@ function SiteHeader() {
         <nav className="hidden gap-7 text-sm font-medium text-muted-foreground md:flex">
           <a href="#about" className="hover:text-foreground">About</a>
           <a href="#receipts" className="hover:text-foreground">Receipts</a>
-          <a href="#verify" className="hover:text-foreground">Verify</a>
+          
           <a href="#contact" className="hover:text-foreground">Contact</a>
         </nav>
         <a
