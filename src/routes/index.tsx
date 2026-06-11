@@ -294,12 +294,45 @@ function ReceiptsSection({
         </div>
       </div>
 
+      <ReceiptsGrid receipts={receipts} />
+    </section>
+  );
+}
+
+function ReceiptsGrid({ receipts }: { receipts: Receipt[] }) {
+  const [showAll, setShowAll] = useState(false);
+  const hasMore = receipts.length > FRONT_PAGE_COUNT;
+  const visible = showAll ? receipts : receipts.slice(0, FRONT_PAGE_COUNT);
+
+  return (
+    <>
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {receipts.map((r) => (
-          <ReceiptCard key={r.id} receipt={r} />
+        {visible.map((r, i) => (
+          <div key={r.id} className="relative">
+            {i === 0 && (
+              <span className="absolute -top-2 -left-2 z-10 rounded-full bg-blood px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-blood-foreground shadow-soft">
+                Latest
+              </span>
+            )}
+            <ReceiptCard receipt={r} />
+          </div>
         ))}
       </div>
-    </section>
+
+      {hasMore && (
+        <div className="mt-10 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setShowAll((v) => !v)}
+            className="rounded-full border border-leaf/40 bg-leaf/10 px-6 py-3 text-sm font-semibold text-leaf transition hover:bg-leaf hover:text-leaf-foreground"
+          >
+            {showAll
+              ? "Show latest only"
+              : `View older receipts (${receipts.length - FRONT_PAGE_COUNT})`}
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 
