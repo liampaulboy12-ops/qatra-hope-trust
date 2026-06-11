@@ -1,7 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import heroDrop from "@/assets/hero-drop.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -20,10 +22,7 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
     ],
     links: [
-      {
-        rel: "preconnect",
-        href: "https://fonts.googleapis.com",
-      },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {
         rel: "stylesheet",
@@ -34,63 +33,17 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-type Receipt = {
+export type Receipt = {
   id: string;
+  receiptId: string;
   date: string;
+  rawDate: string;
   amount: number;
   org: string;
   note: string;
+  fileUrl: string | null;
+  fileType: string | null;
 };
-
-// ─────────────────────────────────────────────────────────────
-// 📋 ADD A NEW RECEIPT HERE
-// Paste your new receipt at the TOP of this list.
-// Total raised, receipts count, and the front-page grid update automatically.
-// ─────────────────────────────────────────────────────────────
-const RECEIPTS: Receipt[] = [
-  {
-    id: "QK-2026-03",
-    date: "Mar 2026",
-    amount: 32400,
-    org: "Al-Khidmat Foundation",
-    note: "Ration packs for displaced families",
-  },
-  {
-    id: "QK-2026-02",
-    date: "Feb 2026",
-    amount: 18500,
-    org: "Edhi Welfare Trust",
-    note: "Emergency medical supplies",
-  },
-  {
-    id: "QK-2026-01",
-    date: "Jan 2026",
-    amount: 25000,
-    org: "Saylani Welfare",
-    note: "Clean drinking water distribution",
-  },
-  {
-    id: "QK-2025-12",
-    date: "Dec 2025",
-    amount: 21750,
-    org: "JDC Foundation",
-    note: "Winter blankets & shelter kits",
-  },
-  {
-    id: "QK-2025-11",
-    date: "Nov 2025",
-    amount: 19200,
-    org: "Alkhidmat Orphan Care",
-    note: "School supplies for 60 children",
-  },
-  {
-    id: "QK-2025-10",
-    date: "Oct 2025",
-    amount: 15800,
-    org: "Indus Hospital",
-    note: "Pediatric treatment fund",
-  },
-];
 
 const FRONT_PAGE_COUNT = 3;
 
@@ -101,24 +54,72 @@ const fmtPKR = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
+const fmtMonth = (iso: string) => {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+};
+
+async function fetchReceipts(): Promise<Receipt[]> {
+  const { data, error } = await supabase
+    .from("receipts")
+    .select("id, receipt_id, org_name, amount, receipt_date, note, file_url, file_type")
+    .order("receipt_date", { ascending: false })
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+
+  const paths = (data ?? []).filter((r) => r.file_url).map((r) => r.file_url as string);
+  const signedMap = new Map<string, string>();
+  if (paths.length) {
+    const { data: signed } = await supabase.storage
+      .from("receipts")
+      .createSignedUrls(paths, 60 * 60 * 24 * 7); // 7 days
+    signed?.forEach((s) => {
+      if (s.path && s.signedUrl) signedMap.set(s.path, s.signedUrl);
+    });
+  }
+
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    receiptId: r.receipt_id,
+    date: fmtMonth(r.receipt_date),
+    rawDate: r.receipt_date,
+    amount: Number(r.amount),
+    org: r.org_name,
+    note: r.note ?? "",
+    fileUrl: r.file_url ? signedMap.get(r.file_url) ?? null : null,
+    fileType: r.file_type,
+  }));
+}
+
 function HomePage() {
-  const totalRaised = RECEIPTS.reduce((s, r) => s + r.amount, 0);
+  const { data: receipts = [], isLoading } = useQuery({
+    queryKey: ["receipts"],
+    queryFn: fetchReceipts,
+  });
+
+  const totalRaised = useMemo(
+    () => receipts.reduce((s, r) => s + r.amount, 0),
+    [receipts],
+  );
   const verifyUrl =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : "https://qatra-e-karam.app";
+    typeof window !== "undefined" ? window.location.origin : "https://qatra-e-karam.app";
 
   return (
     <main className="min-h-screen bg-background text-foreground">
       <SiteHeader />
-      <Hero totalRaised={totalRaised} bottles={Math.round(totalRaised / 5)} />
+      <Hero
+        totalRaised={totalRaised}
+        bottles={Math.round(totalRaised / 5)}
+        receiptCount={receipts.length}
+      />
       <AboutSection />
-      <ReceiptsSection receipts={RECEIPTS} total={totalRaised} />
+      <ReceiptsSection receipts={receipts} total={totalRaised} loading={isLoading} />
       <QRSection url={verifyUrl} />
       <TransparencySection />
       <ContactSection />
       <SiteFooter />
-      <ReceiptLightboxBridge />
+      <ReceiptLightboxBridge receipts={receipts} />
     </main>
   );
 }
@@ -153,7 +154,15 @@ function SiteHeader() {
   );
 }
 
-function Hero({ totalRaised, bottles }: { totalRaised: number; bottles: number }) {
+function Hero({
+  totalRaised,
+  bottles,
+  receiptCount,
+}: {
+  totalRaised: number;
+  bottles: number;
+  receiptCount: number;
+}) {
   return (
     <section id="top" className="relative overflow-hidden">
       <div className="absolute inset-0 -z-10">
@@ -213,7 +222,7 @@ function Hero({ totalRaised, bottles }: { totalRaised: number; bottles: number }
             <div className="my-6 h-px bg-border" />
 
             <div className="grid grid-cols-2 gap-4 text-sm">
-              <Stat label="Receipts published" value={`${RECEIPTS.length}`} />
+              <Stat label="Receipts published" value={`${receiptCount}`} />
               <Stat label="Rupees per bottle" value="Rs. 5" accent />
             </div>
           </div>
@@ -272,9 +281,11 @@ function AboutSection() {
 function ReceiptsSection({
   receipts,
   total,
+  loading,
 }: {
   receipts: Receipt[];
   total: number;
+  loading: boolean;
 }) {
   return (
     <section id="receipts" className="mx-auto max-w-6xl px-5 py-20 md:py-28">
@@ -294,7 +305,18 @@ function ReceiptsSection({
         </div>
       </div>
 
-      <ReceiptsGrid receipts={receipts} />
+      {loading ? (
+        <p className="mt-10 text-center text-muted-foreground">Loading receipts…</p>
+      ) : receipts.length === 0 ? (
+        <div className="mt-10 rounded-2xl border border-dashed border-border bg-card/40 p-10 text-center">
+          <p className="font-display text-lg font-bold">No receipts published yet.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            New receipts will appear here as soon as they're uploaded.
+          </p>
+        </div>
+      ) : (
+        <ReceiptsGrid receipts={receipts} />
+      )}
     </section>
   );
 }
@@ -343,19 +365,19 @@ function ReceiptCard({ receipt }: { receipt: Receipt }) {
         type="button"
         data-receipt-open={receipt.id}
         className="relative block aspect-[4/3] w-full overflow-hidden bg-muted text-left"
-        aria-label={`Open receipt ${receipt.id}`}
+        aria-label={`Open receipt ${receipt.receiptId}`}
       >
-        <ReceiptArtwork receipt={receipt} />
+        <ReceiptThumb receipt={receipt} />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
         <span className="absolute bottom-3 right-3 rounded-full bg-card/95 px-3 py-1 text-[11px] font-semibold text-foreground opacity-0 shadow-soft transition group-hover:opacity-100">
-          View full image →
+          View full →
         </span>
       </button>
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-center justify-between">
           <span className="rounded-full bg-leaf/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-leaf">
-            {receipt.id}
+            {receipt.receiptId}
           </span>
           <span className="text-xs text-muted-foreground">{receipt.date}</span>
         </div>
@@ -363,14 +385,40 @@ function ReceiptCard({ receipt }: { receipt: Receipt }) {
           {fmtPKR(receipt.amount)}
         </p>
         <p className="text-sm font-medium text-foreground">{receipt.org}</p>
-        <p className="text-sm text-muted-foreground">{receipt.note}</p>
+        {receipt.note && <p className="text-sm text-muted-foreground">{receipt.note}</p>}
       </div>
     </article>
   );
 }
 
+function ReceiptThumb({ receipt }: { receipt: Receipt }) {
+  const isImage = receipt.fileType?.startsWith("image/") && receipt.fileUrl;
+  const isPdf = receipt.fileType === "application/pdf" && receipt.fileUrl;
+
+  if (isImage) {
+    return (
+      <img
+        src={receipt.fileUrl!}
+        alt={`Receipt ${receipt.receiptId} from ${receipt.org}`}
+        className="h-full w-full object-cover"
+        loading="lazy"
+      />
+    );
+  }
+  if (isPdf) {
+    return (
+      <div className="grid h-full w-full place-items-center bg-cream text-ink">
+        <div className="text-center">
+          <p className="font-display text-3xl font-black">PDF</p>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-widest">Receipt</p>
+        </div>
+      </div>
+    );
+  }
+  return <ReceiptArtwork receipt={receipt} />;
+}
+
 function ReceiptArtwork({ receipt }: { receipt: Receipt }) {
-  // Receipt-style mock thumbnail until real images are uploaded.
   return (
     <div className="relative h-full w-full bg-cream p-5">
       <div className="absolute inset-3 rounded-lg border border-dashed border-border bg-card p-4 shadow-soft">
@@ -380,7 +428,7 @@ function ReceiptArtwork({ receipt }: { receipt: Receipt }) {
             <span className="h-2 w-2 rounded-full bg-leaf" />
             <span className="h-2 w-2 rounded-full bg-ink" />
           </div>
-          <span className="text-[9px] font-mono text-muted-foreground">{receipt.id}</span>
+          <span className="text-[9px] font-mono text-muted-foreground">{receipt.receiptId}</span>
         </div>
         <p className="mt-3 font-display text-xs font-bold uppercase tracking-widest text-muted-foreground">
           Donation Receipt
@@ -388,15 +436,6 @@ function ReceiptArtwork({ receipt }: { receipt: Receipt }) {
         <p className="mt-1 font-display text-lg font-black text-ink leading-tight">
           {receipt.org}
         </p>
-        <div className="mt-3 space-y-1">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="h-1.5 rounded-full bg-muted"
-              style={{ width: `${85 - i * 18}%` }}
-            />
-          ))}
-        </div>
         <div className="mt-3 flex items-end justify-between">
           <div>
             <p className="text-[9px] uppercase tracking-widest text-muted-foreground">Amount</p>
@@ -457,7 +496,7 @@ function TransparencySection() {
     <section className="mx-auto max-w-4xl px-5 py-20 text-center md:py-24">
       <SectionLabel center>Our Promise</SectionLabel>
       <p className="mt-6 text-balance font-display text-2xl font-bold leading-snug text-foreground md:text-4xl">
-        “100% transparency is our promise. Every rupee is tracked and shown publicly.”
+        "100% transparency is our promise. Every rupee is tracked and shown publicly."
       </p>
       <div className="mx-auto mt-8 h-1 w-24 flag-stripe rounded-full" />
     </section>
@@ -561,7 +600,9 @@ function SiteFooter() {
         <p>
           © {new Date().getFullYear()} Qatra-e-Karam · Every drop, accounted for.
         </p>
-        <p className="text-xs">Made with intention in Pakistan.</p>
+        <Link to="/admin" className="text-xs text-muted-foreground hover:text-foreground">
+          Admin
+        </Link>
       </div>
     </footer>
   );
@@ -588,7 +629,7 @@ function SectionLabel({
 
 /* --- Lightbox --- */
 
-function ReceiptLightboxBridge() {
+function ReceiptLightboxBridge({ receipts }: { receipts: Receipt[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -617,8 +658,11 @@ function ReceiptLightboxBridge() {
     };
   }, [openId]);
 
-  const receipt = RECEIPTS.find((r) => r.id === openId);
+  const receipt = receipts.find((r) => r.id === openId);
   if (!receipt) return null;
+
+  const isImage = receipt.fileType?.startsWith("image/") && receipt.fileUrl;
+  const isPdf = receipt.fileType === "application/pdf" && receipt.fileUrl;
 
   return (
     <div
@@ -628,7 +672,7 @@ function ReceiptLightboxBridge() {
       aria-modal="true"
     >
       <div
-        className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-cream shadow-card"
+        className="relative w-full max-w-2xl overflow-hidden rounded-2xl bg-cream shadow-card"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -639,18 +683,44 @@ function ReceiptLightboxBridge() {
         >
           ✕
         </button>
-        <div className="aspect-[4/5] w-full">
-          <ReceiptArtwork receipt={receipt} />
+        <div className="w-full bg-muted">
+          {isImage ? (
+            <img
+              src={receipt.fileUrl!}
+              alt={`Receipt ${receipt.receiptId}`}
+              className="max-h-[70vh] w-full object-contain"
+            />
+          ) : isPdf ? (
+            <iframe
+              src={receipt.fileUrl!}
+              title={`Receipt ${receipt.receiptId}`}
+              className="h-[70vh] w-full bg-cream"
+            />
+          ) : (
+            <div className="aspect-[4/5] w-full">
+              <ReceiptArtwork receipt={receipt} />
+            </div>
+          )}
         </div>
         <div className="border-t border-border bg-card p-5">
           <p className="font-display text-xl font-bold">{receipt.org}</p>
-          <p className="text-sm text-muted-foreground">{receipt.note}</p>
+          {receipt.note && <p className="text-sm text-muted-foreground">{receipt.note}</p>}
           <div className="mt-3 flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">{receipt.date} · {receipt.id}</span>
+            <span className="text-muted-foreground">{receipt.date} · {receipt.receiptId}</span>
             <span className="font-display text-lg font-bold text-leaf">
               {fmtPKR(receipt.amount)}
             </span>
           </div>
+          {receipt.fileUrl && (
+            <a
+              href={receipt.fileUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-leaf hover:underline"
+            >
+              Open original file ↗
+            </a>
+          )}
         </div>
       </div>
     </div>
