@@ -195,12 +195,6 @@ function Hero({
             >
               View donation receipts
             </a>
-            <a
-              href="#verify"
-              className="rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-muted"
-            >
-              How to verify
-            </a>
           </div>
         </div>
 
