@@ -214,9 +214,7 @@ function Hero({ totalRaised, bottles }: { totalRaised: number; bottles: number }
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <Stat label="Receipts published" value={`${RECEIPTS.length}`} />
-              <Stat label="Partner NGOs" value={`${new Set(RECEIPTS.map(r => r.org)).size}`} />
-              <Stat label="Months active" value="6" />
-              <Stat label="Hidden fees" value="0" accent />
+              <Stat label="Rupees per bottle" value="Rs. 5" accent />
             </div>
           </div>
           <div className="absolute -top-4 -right-3 rounded-full bg-blood px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-blood-foreground shadow-soft">
