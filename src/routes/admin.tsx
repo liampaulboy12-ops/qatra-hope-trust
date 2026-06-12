@@ -50,33 +50,83 @@ function AdminPage() {
         <div className="h-[3px] flag-stripe" aria-hidden />
       </header>
 
-      {session ? <AdminAuthed userEmail={session.user.email ?? ""} /> : <SignInForm />}
+      {session ? <AdminAuthed userEmail={session.user.email ?? ""} /> : <AuthForm />}
     </main>
   );
 }
 
-function SignInForm() {
+function AuthForm() {
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    setInfo(null);
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) setError(error.message);
+    try {
+      if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: `${window.location.origin}/admin` },
+        });
+        if (error) throw error;
+        const { data: s } = await supabase.auth.getSession();
+        if (!s.session) {
+          const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
+          if (signInErr) throw signInErr;
+        }
+        const { data: claimed } = await supabase.rpc("claim_admin_if_first");
+        setInfo(
+          claimed
+            ? "Account created — you are now the admin."
+            : "Account created. An existing admin must grant you access.",
+        );
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="mx-auto max-w-md px-5 py-20">
-      <h1 className="font-display text-3xl font-bold">Admin sign in</h1>
+      <h1 className="font-display text-3xl font-bold">
+        {mode === "signup" ? "Create admin account" : "Admin sign in"}
+      </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Restricted area. Only authorized admins can upload receipts.
+        {mode === "signup"
+          ? "The first account to sign up becomes the project admin. Later signups need approval."
+          : "Restricted area. Only authorized admins can upload receipts."}
       </p>
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+
+      <div className="mt-6 inline-flex rounded-full border border-border bg-card p-1 text-xs font-semibold">
+        <button
+          type="button"
+          onClick={() => { setMode("signin"); setError(null); setInfo(null); }}
+          className={`rounded-full px-4 py-1.5 transition ${mode === "signin" ? "bg-leaf text-leaf-foreground" : "text-muted-foreground"}`}
+        >
+          Sign in
+        </button>
+        <button
+          type="button"
+          onClick={() => { setMode("signup"); setError(null); setInfo(null); }}
+          className={`rounded-full px-4 py-1.5 transition ${mode === "signup" ? "bg-leaf text-leaf-foreground" : "text-muted-foreground"}`}
+        >
+          Sign up
+        </button>
+      </div>
+
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <Field label="Email">
           <input
             type="email"
@@ -91,19 +141,21 @@ function SignInForm() {
           <input
             type="password"
             required
+            minLength={6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="input"
-            autoComplete="current-password"
+            autoComplete={mode === "signup" ? "new-password" : "current-password"}
           />
         </Field>
         {error && <p className="text-sm text-destructive">{error}</p>}
+        {info && <p className="text-sm text-leaf">{info}</p>}
         <button
           type="submit"
           disabled={loading}
           className="w-full rounded-full bg-leaf px-6 py-3 text-sm font-semibold text-leaf-foreground transition hover:opacity-90 disabled:opacity-50"
         >
-          {loading ? "Signing in…" : "Sign in"}
+          {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
         </button>
       </form>
       <Styles />
