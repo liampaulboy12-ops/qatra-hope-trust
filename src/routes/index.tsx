@@ -175,9 +175,10 @@ function HomePage() {
   );
 
   return (
-    <main className="relative min-h-screen bg-background text-foreground">
+    <>
       <PalestineFlagBg />
-      <SiteHeader />
+      <main className="relative min-h-screen text-foreground">
+        <SiteHeader />
       <Hero
         totalRaised={totalRaised}
         bottles={Math.round(totalRaised / 5)}
