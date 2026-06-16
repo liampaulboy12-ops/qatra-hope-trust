@@ -211,15 +211,17 @@ function SiteHeader() {
         <nav className="hidden gap-7 text-sm font-medium text-muted-foreground md:flex">
           <a href="#about" className="hover:text-foreground">About</a>
           <a href="#receipts" className="hover:text-foreground">Receipts</a>
-          
           <a href="#contact" className="hover:text-foreground">Contact</a>
         </nav>
-        <a
-          href="#receipts"
-          className="rounded-full bg-leaf px-4 py-2 text-xs font-semibold text-leaf-foreground shadow-soft transition hover:opacity-90"
-        >
-          See Receipts
-        </a>
+        <div className="flex items-center gap-3">
+          <DarkModeToggle />
+          <a
+            href="#receipts"
+            className="rounded-full bg-leaf px-4 py-2 text-xs font-semibold text-leaf-foreground shadow-soft transition hover:opacity-90"
+          >
+            See Receipts
+          </a>
+        </div>
       </div>
       <div className="h-[3px] flag-stripe" aria-hidden />
     </header>
