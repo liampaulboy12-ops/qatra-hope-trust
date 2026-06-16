@@ -159,9 +159,10 @@ function PalestineFlagBg() {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
+        filter: "blur(8px) brightness(0.6)",
       }}
     >
-      <div className="absolute inset-0 bg-background/30 dark:bg-background/25" />
+      <div className="absolute inset-0 bg-background/10 dark:bg-background/5" />
     </div>
   );
 }
