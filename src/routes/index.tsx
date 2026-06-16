@@ -105,11 +105,10 @@ function useDarkMode() {
     if (saved === "light") {
       document.documentElement.classList.remove("dark");
       setIsDark(false);
-    } else if (saved === "dark") {
-      document.documentElement.classList.add("dark");
-      setIsDark(true);
     } else {
+      // default to dark mode
       document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
       setIsDark(true);
     }
   }, []);
