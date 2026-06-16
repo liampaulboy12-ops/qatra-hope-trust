@@ -104,7 +104,8 @@ function HomePage() {
   );
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="relative min-h-screen bg-background text-foreground">
+      <PalestineFlagBg />
       <SiteHeader />
       <Hero
         totalRaised={totalRaised}
