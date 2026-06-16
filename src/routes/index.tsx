@@ -151,18 +151,14 @@ function DarkModeToggle() {
 
 function PalestineFlagBg() {
   return (
-    <div
-      className="pointer-events-none fixed inset-0 -z-50"
-      aria-hidden
-      style={{
-        backgroundImage: `url(${palestineFlag})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-        filter: "blur(8px) brightness(0.6)",
-      }}
-    >
-      <div className="absolute inset-0 bg-background/10 dark:bg-background/5" />
+    <div className="pointer-events-none fixed inset-0 -z-50" aria-hidden>
+      <img
+        src={palestineFlag}
+        alt=""
+        className="h-full w-full object-cover opacity-40 blur-md"
+        loading="eager"
+      />
+      <div className="absolute inset-0 bg-black/20 dark:bg-black/30" />
     </div>
   );
 }
