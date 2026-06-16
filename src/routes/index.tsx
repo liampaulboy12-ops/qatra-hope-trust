@@ -152,28 +152,7 @@ function DarkModeToggle() {
 function PalestineFlagBg() {
   return (
     <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(180deg, 
-              #000000 0%, #000000 33.33%, 
-              #ffffff 33.33%, #ffffff 66.66%, 
-              #00732f 66.66%, #00732f 100%
-            )
-          `,
-        }}
-      />
-      {/* Red triangle on hoist side */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `conic-gradient(from 90deg at 0% 50%, transparent 135deg, #ce1126 135deg 225deg, transparent 225deg)`,
-          backgroundSize: '40% 100%',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <div className="absolute inset-0 bg-black/30 dark:bg-black/20" />
+      <div className="absolute inset-0 bg-red-500" />
     </div>
   );
 }
