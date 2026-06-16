@@ -161,7 +161,7 @@ function PalestineFlagBg() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div className="absolute inset-0 bg-background/50 dark:bg-background/45 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-background/30 dark:bg-background/25" />
     </div>
   );
 }
