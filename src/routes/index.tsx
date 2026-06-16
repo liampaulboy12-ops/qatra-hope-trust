@@ -92,6 +92,80 @@ async function fetchReceipts(): Promise<Receipt[]> {
   }));
 }
 
+/* --- Dark mode + Flag background --- */
+
+function useDarkMode() {
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return document.documentElement.classList.contains("dark");
+  });
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved === "light") {
+      document.documentElement.classList.remove("dark");
+      setIsDark(false);
+    } else if (saved === "dark") {
+      document.documentElement.classList.add("dark");
+      setIsDark(true);
+    } else {
+      document.documentElement.classList.add("dark");
+      setIsDark(true);
+    }
+  }, []);
+
+  const toggle = () => {
+    setIsDark((prev) => {
+      const next = !prev;
+      if (next) {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      }
+      return next;
+    });
+  };
+
+  return { isDark, toggle };
+}
+
+function DarkModeToggle() {
+  const { isDark, toggle } = useDarkMode();
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-foreground shadow-soft transition hover:bg-muted"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Light mode" : "Dark mode"}
+    >
+      {isDark ? (
+        <SunIcon className="h-4 w-4" />
+      ) : (
+        <MoonIcon className="h-4 w-4" />
+      )}
+    </button>
+  );
+}
+
+function PalestineFlagBg() {
+  return (
+    <div
+      className="pointer-events-none fixed inset-0 -z-50 opacity-[0.03] dark:opacity-[0.04]"
+      aria-hidden
+    >
+      <img
+        src={palestineFlag}
+        alt=""
+        className="h-full w-full object-cover"
+        loading="eager"
+      />
+    </div>
+  );
+}
+
 function HomePage() {
   const { data: receipts = [], isLoading } = useQuery({
     queryKey: ["receipts"],
