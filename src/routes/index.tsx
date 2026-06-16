@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useMemo, useState } from "react";
 import heroDrop from "@/assets/hero-drop.jpg";
+import palestineFlag from "@/assets/palestine-flag.png";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
