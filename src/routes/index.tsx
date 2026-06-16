@@ -155,10 +155,10 @@ function PalestineFlagBg() {
       <img
         src={palestineFlag}
         alt=""
-        className="h-full w-full object-cover opacity-40 blur-md"
+        className="h-full w-full object-cover opacity-80 dark:opacity-70"
         loading="eager"
       />
-      <div className="absolute inset-0 bg-black/20 dark:bg-black/30" />
+      <div className="absolute inset-0 bg-black/10 dark:bg-black/20" />
     </div>
   );
 }
