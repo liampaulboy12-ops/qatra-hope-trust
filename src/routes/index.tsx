@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useMemo, useState } from "react";
 import heroDrop from "@/assets/hero-drop.jpg";
+import palestineFlag from "@/assets/palestine-flag.png";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -92,6 +92,77 @@ async function fetchReceipts(): Promise<Receipt[]> {
   }));
 }
 
+/* --- Dark mode + Flag background --- */
+
+function useDarkMode() {
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return document.documentElement.classList.contains("dark");
+  });
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved === "light") {
+      document.documentElement.classList.remove("dark");
+      setIsDark(false);
+    } else {
+      // default to dark mode
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setIsDark(true);
+    }
+  }, []);
+
+  const toggle = () => {
+    setIsDark((prev) => {
+      const next = !prev;
+      if (next) {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      }
+      return next;
+    });
+  };
+
+  return { isDark, toggle };
+}
+
+function DarkModeToggle() {
+  const { isDark, toggle } = useDarkMode();
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-foreground shadow-soft transition hover:bg-muted"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Light mode" : "Dark mode"}
+    >
+      {isDark ? (
+        <SunIcon className="h-4 w-4" />
+      ) : (
+        <MoonIcon className="h-4 w-4" />
+      )}
+    </button>
+  );
+}
+
+function PalestineFlagBg() {
+  return (
+    <div className="pointer-events-none fixed inset-0 -z-50" aria-hidden>
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
+      <img
+        src={palestineFlag}
+        alt=""
+        className="h-full w-full object-cover opacity-[0.07] dark:opacity-[0.10]"
+        loading="eager"
+      />
+    </div>
+  );
+}
+
 function HomePage() {
   const { data: receipts = [], isLoading } = useQuery({
     queryKey: ["receipts"],
@@ -104,7 +175,8 @@ function HomePage() {
   );
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="relative min-h-screen bg-background text-foreground">
+      <PalestineFlagBg />
       <SiteHeader />
       <Hero
         totalRaised={totalRaised}
@@ -136,15 +208,17 @@ function SiteHeader() {
         <nav className="hidden gap-7 text-sm font-medium text-muted-foreground md:flex">
           <a href="#about" className="hover:text-foreground">About</a>
           <a href="#receipts" className="hover:text-foreground">Receipts</a>
-          
           <a href="#contact" className="hover:text-foreground">Contact</a>
         </nav>
-        <a
-          href="#receipts"
-          className="rounded-full bg-leaf px-4 py-2 text-xs font-semibold text-leaf-foreground shadow-soft transition hover:opacity-90"
-        >
-          See Receipts
-        </a>
+        <div className="flex items-center gap-3">
+          <DarkModeToggle />
+          <a
+            href="#receipts"
+            className="rounded-full bg-leaf px-4 py-2 text-xs font-semibold text-leaf-foreground shadow-soft transition hover:opacity-90"
+          >
+            See Receipts
+          </a>
+        </div>
       </div>
       <div className="h-[3px] flag-stripe" aria-hidden />
     </header>
@@ -709,6 +783,28 @@ function InstagramIcon() {
       <rect x="3" y="3" width="18" height="18" rx="5" />
       <circle cx="12" cy="12" r="4" />
       <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+function SunIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  );
+}
+function MoonIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
     </svg>
   );
 }
