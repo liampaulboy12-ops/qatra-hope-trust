@@ -203,7 +203,7 @@ function HomePage() {
       <SiteFooter />
       <ReceiptLightboxBridge receipts={receipts} />
     </main>
-  </>);
+  );
 }
 
 function SiteHeader() {
