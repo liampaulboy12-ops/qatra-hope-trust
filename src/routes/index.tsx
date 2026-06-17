@@ -151,8 +151,27 @@ function DarkModeToggle() {
 
 function PalestineFlagBg() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
-      <div className="absolute inset-0 bg-red-500" />
+    <div className="pointer-events-none absolute inset-0 -z-[1]" aria-hidden>
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `
+            linear-gradient(180deg, 
+              #0a0a0a 0%, #0a0a0a 33.33%, 
+              #ffffff 33.33%, #ffffff 66.66%, 
+              #00a651 66.66%, #00a651 100%
+            )
+          `,
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `conic-gradient(from 90deg at 0% 50%, transparent 135deg, #ce1126 135deg 225deg, transparent 225deg)`,
+          backgroundSize: '40% 100%',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
     </div>
   );
 }
@@ -169,10 +188,9 @@ function HomePage() {
   );
 
   return (
-    <>
+    <main className="relative min-h-screen text-foreground">
       <PalestineFlagBg />
-      <main className="relative z-10 min-h-screen text-foreground">
-        <SiteHeader />
+      <SiteHeader />
       <Hero
         totalRaised={totalRaised}
         bottles={Math.round(totalRaised / 5)}
