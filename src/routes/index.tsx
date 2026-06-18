@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import heroDrop from "@/assets/hero-drop.jpg";
+import heroFlag from "@/assets/hero-palestine-flag.jpg";
 import palestineFlag from "@/assets/palestine-flag.png";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -238,13 +238,14 @@ function Hero({
     <section id="top" className="relative overflow-hidden">
       <div className="absolute inset-0 -z-10">
         <img
-          src={heroDrop}
+          src={heroFlag}
           alt=""
           width={1920}
           height={1080}
-          className="h-full w-full object-cover opacity-40"
+          className="h-full w-full object-cover opacity-80"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-background/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background" />
       </div>
 
       <div className="mx-auto grid max-w-6xl gap-10 px-5 pt-16 pb-20 md:grid-cols-[1.2fr_0.8fr] md:gap-14 md:pt-24 md:pb-28">
