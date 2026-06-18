@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import heroFlag from "@/assets/hero-palestine-flag.jpg";
+import heroFlag from "@/assets/palestine-flag.jpg.asset.json";
 import palestineFlag from "@/assets/palestine-flag.png";
 import qatraLogo from "@/assets/qatra-logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
@@ -241,7 +241,7 @@ function Hero({
     <section id="top" className="relative overflow-hidden">
       <div className="absolute inset-0 -z-10">
         <img
-          src={heroFlag}
+          src={heroFlag.url}
           alt=""
           width={1920}
           height={1080}
