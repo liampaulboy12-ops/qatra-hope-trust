@@ -245,10 +245,10 @@ function Hero({
           alt=""
           width={1920}
           height={1080}
-          className="h-full w-full object-cover opacity-80"
+          className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-background/20" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
       </div>
 
       <div className="mx-auto grid max-w-6xl gap-10 px-5 pt-16 pb-20 md:grid-cols-[1.2fr_0.8fr] md:gap-14 md:pt-24 md:pb-28">
