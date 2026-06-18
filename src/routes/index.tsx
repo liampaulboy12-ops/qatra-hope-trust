@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import heroFlag from "@/assets/hero-palestine-flag.jpg";
 import palestineFlag from "@/assets/palestine-flag.png";
+import qatraLogo from "@/assets/qatra-logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -197,10 +198,12 @@ function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <a href="#top" className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-ink text-ink-foreground">
-            <DropIcon className="h-4 w-4" />
-          </span>
+        <a href="#top" className="flex items-center gap-3">
+          <img
+            src={qatraLogo.url}
+            alt="Qatra-e-Karam"
+            className="h-14 w-14 md:h-16 md:w-16 object-contain"
+          />
           <span className="font-display text-lg font-bold tracking-tight">
             Qatra<span className="text-leaf">-e-</span>Karam
           </span>
