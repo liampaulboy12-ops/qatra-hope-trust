@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import heroFlag from "@/assets/hero-palestine-flag.jpg";
+import heroFlag from "@/assets/palestine-flag.jpg.asset.json";
 import palestineFlag from "@/assets/palestine-flag.png";
 import qatraLogo from "@/assets/qatra-logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
