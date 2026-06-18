@@ -530,9 +530,9 @@ function TransparencySection() {
 }
 
 function ContactSection() {
-  const whatsapp = "https://wa.me/923000000000";
-  const email = "hello@qatra-e-karam.org";
-  const instagram = "https://instagram.com/qatraekaram";
+  const whatsapp = "https://wa.me/923152657471";
+  const email = "qatraekaram.com";
+  const instagram = "https://instagram.com/qatra_e_karam";
 
   return (
     <section id="contact" className="border-t border-border bg-card/40">
