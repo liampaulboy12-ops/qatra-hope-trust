@@ -552,7 +552,7 @@ function ContactSection() {
             <ContactRow
               href={whatsapp}
               label="WhatsApp"
-              value="+92 300 0000000"
+              value="+92 315 2657471"
               icon={<WhatsAppIcon />}
               tone="leaf"
             />
