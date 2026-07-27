@@ -536,7 +536,7 @@ function TransparencySection() {
 function ContactSection() {
   const whatsapp = "https://wa.me/923010228740";
   const email = "abban@qatraekaram";
-  const instagram = "https://instagram.com/qatra_e_karam";
+  const instagram = "https://www.instagram.com/qatra_e_karam?igsh=MWFiMHVibzJ1aXAzcA==";
 
   return (
     <section id="contact" className="border-t border-border bg-card/40">
