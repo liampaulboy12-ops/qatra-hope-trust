@@ -534,8 +534,8 @@ function TransparencySection() {
 }
 
 function ContactSection() {
-  const whatsapp = "https://wa.me/923152657471";
-  const email = "qatraekaram.com";
+  const whatsapp = "https://wa.me/923010228740";
+  const email = "abban@qatraekaram";
   const instagram = "https://instagram.com/qatra_e_karam";
 
   return (
