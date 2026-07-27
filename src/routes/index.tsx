@@ -534,8 +534,8 @@ function TransparencySection() {
 }
 
 function ContactSection() {
-  const whatsapp = "https://wa.me/923152657471";
-  const email = "qatraekaram.com";
+  const whatsapp = "https://wa.me/923010228740";
+  const email = "abban@qatraekaram";
   const instagram = "https://instagram.com/qatra_e_karam";
 
   return (
@@ -556,7 +556,7 @@ function ContactSection() {
             <ContactRow
               href={whatsapp}
               label="WhatsApp"
-              value="+92 315 2657471"
+              value="+92 301 0228740"
               icon={<WhatsAppIcon />}
               tone="leaf"
             />
@@ -569,7 +569,7 @@ function ContactSection() {
             <ContactRow
               href={instagram}
               label="Instagram"
-              value="@qatra_e_karam"
+              value="qatra_e_karam"
               icon={<InstagramIcon />}
               tone="blood"
             />
