@@ -569,7 +569,7 @@ function ContactSection() {
             <ContactRow
               href={instagram}
               label="Instagram"
-              value="@qatra_e_karam"
+              value="qatra_e_karam"
               icon={<InstagramIcon />}
               tone="blood"
             />
